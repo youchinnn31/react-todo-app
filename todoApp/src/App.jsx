@@ -1,33 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState,useRef } from 'react'
 import './App.css'
-
+import { v4 as uuidv4 } from 'uuid';
 function App() {
-  const [count, setCount] = useState(0)
-
+  const [tasks, setTask] = useState([]);
+  const taskRef = useRef();
+  const handleClick = () => {
+    const task = taskRef.current.value;
+    if(task === "") {
+      return;
+    }
+    setTask((prev) => {
+      return [...prev,{id:uuidv4(),task:task,completed:false}];
+    });
+    taskRef.current.value = "";
+  };
+  const handleToggle = (id) => {
+    const newTasks = tasks.map((task) => {
+      if(task.id === id){
+        return {...task,completed:!task.completed};
+      }
+      return task;
+    });
+    setTask(newTasks);
+  };
+  const deleteClick = () => {
+    const newTasks = tasks.filter((task) => {
+      return !task.completed;
+    });
+    setTask(newTasks);
+  };
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>TodoApp</h1>
+      <input type = "text" ref = {taskRef} />
+      <button onClick = {handleClick}>+</button>
+      {tasks.map((task) => {
+        return (
+        <li>
+          <input type = "checkbox" checked = {task.completed} onChange = {() => handleToggle(task.id)} />
+          <span>{task.task}</span>
+        </li>
+        );
+      })}
+      <button onClick = {deleteClick}>選択済みの項目を削除</button>
     </>
   )
 }
