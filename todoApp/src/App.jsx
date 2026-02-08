@@ -33,10 +33,11 @@ function App() {
     setTask(newTasks);
   };
   const deleteClick = () => {
-    const newTasks = tasks.filter((task) => {
-      return !task.completed;
+    setTask((prev) => {
+      return prev.filter((task) => {
+        return !task.completed;
+      });
     });
-    setTask(newTasks);
   };
   return (
     <>
